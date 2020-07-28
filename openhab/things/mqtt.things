@@ -1,0 +1,3 @@
+Bridge mqtt:broker:broker "Broker" [ host="mqtt", port=1883, secure=false, username="", password="" ]
+{
+}

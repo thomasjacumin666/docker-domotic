@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+        openhab:
+                build: openhab
+                ports:
+                        - "443:8443"
+                networks:
+                        - openhab_mqtt
+                volumes:
+                        - "/etc/localtime:/etc/localtime:ro"
+                        - "/etc/timezone:/etc/timezone:ro"
+                        - "./data/openhab/addons:/openhab/addons"
+                        - "./data/openhab/conf:/openhab/conf"
+                        - "./data/openhab/userdata:/openhab/userdata"
+                environment:
+                        #OPENHAB_HTTP_PORT: "8080"
+                        OPENHAB_HTTPS_PORT: "8443"
+                        USER_ID: "1000"
+                        GROUP_ID: "1000"
+
+        mqtt:
+                image:
+                        eclipse-mosquitto:latest
+                networks:
+                        - openhab_mqtt
+
+        samba:
+                image:
+                        dperson/samba:latest
+                ports:
+                        - "139:139"
+                        - "445:445"
+                network_mode: "host"
+                volumes:
+                        - "./data/openhab:/data/openhab"
+                environment:
+                        NMBD: 'yes'
+                        WORKGROUP: 'OPENHAB'
+                        USER: 'test;1234;1000;test;1000'
+                        SHARE: 'OpenHAB;/data/openhab'
+                        #PERMISSIONS: 'yes'
+
+networks:
+        openhab_mqtt:
