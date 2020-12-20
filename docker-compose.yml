@@ -1,6 +1,17 @@
 version: '3'
 
 services:
+
+        portainer:
+                image: portainer/portainer
+                command: -H unix:///var/run/docker.sock
+                restart: always
+                ports:
+                        - 9000:9000
+                        - 8000:8000
+                volumes:
+                        - /var/run/docker.sock:/var/run/docker.sock
+
         openhab:
                 build: openhab
                 ports:
@@ -25,6 +36,20 @@ services:
                 networks:
                         - openhab_mqtt
 
+        zigbee2mqtt:
+                container_name: zigbee2mqtt
+                image: koenkk/zigbee2mqtt
+                volumes:
+                        - ./data:/app/data
+                        - /run/udev:/run/udev:ro
+                devices:
+                        - /dev/ttyACM0:/dev/ttyACM0
+                networks:
+                        - openhab_mqtt
+                privileged: true
+                environment:
+                        - TZ=Europe/Paris
+
         samba:
                 image:
                         dperson/samba:latest
@@ -33,13 +58,28 @@ services:
                         - "445:445"
                 network_mode: "host"
                 volumes:
-                        - "./data/openhab:/data/openhab"
+                        - "./data:/data/openhab"
                 environment:
                         NMBD: 'yes'
                         WORKGROUP: 'OPENHAB'
                         USER: 'test;1234;1000;test;1000'
                         SHARE: 'OpenHAB;/data/openhab'
                         #PERMISSIONS: 'yes'
+        
+        rclone_rclone:
+                image: rclone/rclone
+                container_name: rclone_rclone
+                command: rcd --rc-web-gui --rc-addr :5572 --rc-user toto --rc-pass 1234
+                ports:
+                        - "5572:5572"
+                volumes:
+                        - ./data/rclone:/config/rclone
+                        - ./data/rclone:/logs
+                environment:
+                        - PHP_TZ=Europe/Paris
+                        - PUID=1000
+                        - PGID=1000
+
 
 networks:
         openhab_mqtt:
