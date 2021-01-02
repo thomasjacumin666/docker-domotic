@@ -1,17 +1,6 @@
 version: '3'
 
 services:
-
-        portainer:
-                image: portainer/portainer:latest
-                command: -H unix:///var/run/docker.sock
-                restart: always
-                ports:
-                        - 9000:9000
-                        - 8000:8000
-                volumes:
-                        - /var/run/docker.sock:/var/run/docker.sock
-
         openhab:
                 build: openhab
                 ports:
@@ -68,38 +57,8 @@ services:
                 environment:
                         - MQTT_SERVER=mosquitto
                         - MQTT_TOPIC_PREFIX=broadlink/rm-mini3/
-                        - DEVICE_HOST=192.168.1.60
-                        - DEVICE_MAC=34:AA:FF:CC:D5:68
-
-        samba:
-                image:
-                        dperson/samba:latest
-                ports:
-                        - "139:139"
-                        - "445:445"
-                network_mode: "host"
-                volumes:
-                        - "./data/openhab:/data/openhab"
-                environment:
-                        NMBD: 'yes'
-                        WORKGROUP: 'OPENHAB'
-                        USER: 'test;1234;1000;test;1000'
-                        SHARE: 'OpenHAB;/data/openhab;no;no;no'
-                        #PERMISSIONS: 'yes'
-        
-        rclone_rclone:
-                image: rclone/rclone
-                command: rcd --rc-web-gui --rc-addr :5572 --rc-user toto --rc-pass 1234
-                ports:
-                        - "5572:5572"
-                volumes:
-                        - ./data/rclone:/config/rclone
-                        - ./data/rclone:/logs
-                environment:
-                        - PHP_TZ=Europe/Paris
-                        - PUID=1000
-                        - PGID=1000
-
+                        - DEVICE_HOST=192.168.1.65
+                        - DEVICE_MAC=68:57:2d:5d:79:e4
 
 networks:
         openhab_mqtt:

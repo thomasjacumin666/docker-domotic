@@ -1,0 +1,11 @@
+[Unit]
+Description=Additional drive
+
+[Mount]
+What=/dev/sdd1
+Where=/mnt/external
+Type=ext4
+Options=defaults
+
+[Install]
+WantedBy=multi-user.target

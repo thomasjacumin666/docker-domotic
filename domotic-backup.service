@@ -1,0 +1,11 @@
+[Unit]
+Description=Backup domotic configration files
+After=network-online.target
+ 
+[Service]
+Type=simple
+ExecStart=/bin/rsync -avz --delete-after $SOURCE/ $BACKUP_ROOT/latest --log-file=$RSYNC_LOG 
+ 
+[Install]
+WantedBy=multi-user.target
+
